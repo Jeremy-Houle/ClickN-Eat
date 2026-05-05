@@ -1,0 +1,6 @@
+@ClickNEat.API_HostAddress = http://localhost:5294
+
+GET {{ClickNEat.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
