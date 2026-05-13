@@ -1,70 +1,36 @@
-using ClickNEat.API.Data;
 using ClickNEat.Core.DTOs;
-using ClickNEat.Core.Models;
+using ClickNEat.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClickNEat.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class OrdersController(AppDbContext db) : ControllerBase
+[Authorize]
+public class OrdersController(IOrderService orders) : BaseApiController
 {
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMy([FromQuery] int page = 1, [FromQuery] int pageSize = 20) =>
+        Ok(await orders.GetMyAsync(CurrentUserId, page, pageSize));
+
     [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var orders = await db.Orders.Include(o => o.Items).ToListAsync();
-        return Ok(orders);
-    }
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
+        Ok(await orders.GetAllAsync(page, pageSize));
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var order = await db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
-        return order is null ? NotFound() : Ok(order);
-    }
+    public async Task<IActionResult> GetById(int id) =>
+        FromResult(await orders.GetByIdAsync(id, CurrentUserId, User.IsInRole("Admin")));
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrderDto dto)
     {
-        var order = new Order
-        {
-            CustomerName = dto.CustomerName,
-            CustomerEmail = dto.CustomerEmail,
-            CustomerPhone = dto.CustomerPhone,
-        };
-
-        foreach (var itemDto in dto.Items)
-        {
-            var menuItem = await db.MenuItems.FindAsync(itemDto.MenuItemId);
-            if (menuItem is null)
-                return BadRequest($"Menu item {itemDto.MenuItemId} not found.");
-
-            order.Items.Add(new OrderItem
-            {
-                MenuItemId = menuItem.Id,
-                MenuItemName = menuItem.Name,
-                Quantity = itemDto.Quantity,
-                UnitPrice = menuItem.Price
-            });
-        }
-
-        db.Orders.Add(order);
-        await db.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+        var result = await orders.CreateAsync(dto, CurrentUserId);
+        if (!result.IsSuccess) return StatusCode(result.StatusCode, result.Error);
+        return CreatedAtAction(nameof(GetById), new { id = result.Value!.Order.Id }, result.Value);
     }
 
     [HttpPatch("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, UpdateOrderStatusDto dto)
-    {
-        var order = await db.Orders.FindAsync(id);
-        if (order is null) return NotFound();
-
-        if (!Enum.TryParse<OrderStatus>(dto.Status, true, out var status))
-            return BadRequest("Invalid status.");
-
-        order.Status = status;
-        await db.SaveChangesAsync();
-        return Ok(order);
-    }
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateStatus(int id, UpdateOrderStatusDto dto) =>
+        FromResult(await orders.UpdateStatusAsync(id, dto.Status));
 }

@@ -1,65 +1,61 @@
-using ClickNEat.API.Data;
-using ClickNEat.Core.Models;
+using ClickNEat.Core.DTOs;
+using ClickNEat.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClickNEat.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class MenuItemsController(AppDbContext db) : ControllerBase
+public class MenuItemsController(IMenuItemService menuItems) : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string? category = null)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int? restaurantId = null,
+        [FromQuery] string? category = null,
+        [FromQuery] bool includeAll = false)
     {
-        var query = db.MenuItems.Where(m => m.IsAvailable);
-        if (!string.IsNullOrWhiteSpace(category))
-            query = query.Where(m => m.Category == category);
-        return Ok(await query.ToListAsync());
+        var effectiveIncludeAll = includeAll && User.IsInRole("Admin");
+        return Ok(await menuItems.GetAllAsync(restaurantId, category, effectiveIncludeAll));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var item = await db.MenuItems.FindAsync(id);
+        var item = await menuItems.GetByIdAsync(id);
         return item is null ? NotFound() : Ok(item);
     }
 
     [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories()
+    public async Task<IActionResult> GetCategories(
+        [FromQuery] int? restaurantId = null,
+        [FromQuery] bool includeAll = false)
     {
-        var categories = await db.MenuItems
-            .Where(m => m.IsAvailable)
-            .Select(m => m.Category)
-            .Distinct()
-            .ToListAsync();
-        return Ok(categories);
+        var effectiveIncludeAll = includeAll && User.IsInRole("Admin");
+        return Ok(await menuItems.GetCategoriesAsync(restaurantId, effectiveIncludeAll));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(MenuItem item)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(CreateMenuItemDto dto)
     {
-        db.MenuItems.Add(item);
-        await db.SaveChangesAsync();
+        var item = await menuItems.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, MenuItem item)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(int id, UpdateMenuItemDto dto)
     {
-        if (id != item.Id) return BadRequest();
-        db.Entry(item).State = EntityState.Modified;
-        await db.SaveChangesAsync();
+        var result = await menuItems.UpdateAsync(id, dto);
+        if (!result.IsSuccess) return StatusCode(result.StatusCode, result.Error);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
-        var item = await db.MenuItems.FindAsync(id);
-        if (item is null) return NotFound();
-        db.MenuItems.Remove(item);
-        await db.SaveChangesAsync();
+        var result = await menuItems.DeleteAsync(id);
+        if (!result.IsSuccess) return StatusCode(result.StatusCode, result.Error);
         return NoContent();
     }
 }
