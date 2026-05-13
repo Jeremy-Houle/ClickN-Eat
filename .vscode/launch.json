@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend (API)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/backend/ClickNEat.API/bin/Debug/net9.0/ClickNEat.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/backend/ClickNEat.API",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Tests",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/backend/ClickNEat.Tests/bin/Debug/net9.0/ClickNEat.Tests.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/backend/ClickNEat.Tests",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Attach to process",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

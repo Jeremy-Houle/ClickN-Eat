@@ -11,5 +11,18 @@ dist/
 .env
 .env.local
 
+# Claude Code (permissions locales, chemins spécifiques à la machine)
+.claude/settings.local.json
+
+# ASP.NET Core — configs locales avec secrets/connection strings
+appsettings.Development.json
+appsettings.Production.json
+
+# Fichiers uploadés par les utilisateurs (binaires, générés à runtime)
+**/wwwroot/uploads/
+
+# Fichier HTTP template auto-généré (endpoint inexistant)
+*.http
+
 # Misc
 *.log

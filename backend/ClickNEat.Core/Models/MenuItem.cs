@@ -9,4 +9,6 @@ public class MenuItem
     public string Category { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public bool IsAvailable { get; set; } = true;
+    public string Tags { get; set; } = "";
+    public int RestaurantId { get; set; } = 1;
 }
