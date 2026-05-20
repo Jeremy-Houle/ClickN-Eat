@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClickNEat.API", "ClickNEat.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClickNEat.Core", "ClickNEat.Core\ClickNEat.Core.csproj", "{81CF8185-0409-4F52-BE83-59E468A00BCE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClickNEat.Tests", "ClickNEat.Tests\ClickNEat.Tests.csproj", "{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{81CF8185-0409-4F52-BE83-59E468A00BCE}.Release|x64.Build.0 = Release|Any CPU
 		{81CF8185-0409-4F52-BE83-59E468A00BCE}.Release|x86.ActiveCfg = Release|Any CPU
 		{81CF8185-0409-4F52-BE83-59E468A00BCE}.Release|x86.Build.0 = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|x64.Build.0 = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{2CA69CEF-EF17-4266-AD1B-99EB8600F6C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
