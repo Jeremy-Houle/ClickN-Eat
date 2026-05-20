@@ -1,0 +1,19 @@
+{
+  "name": "ClickN'Eat",
+  "short_name": "ClickN'Eat",
+  "description": "Commandez vos plats préférés en quelques clics",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f13",
+  "theme_color": "#FF416C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "shopping"]
+}

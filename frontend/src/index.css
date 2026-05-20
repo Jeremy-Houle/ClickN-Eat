@@ -1,7 +1,27 @@
-/* Reset — App.css handles all styles */
 *, *::before, *::after {
   box-sizing: border-box;
-}
-body {
   margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  min-height: 100vh;
+}
+
+html {
+  background: #0f0f13;
+}
+
+body {
+  background: #0f0f13;
+  color: #e8e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
