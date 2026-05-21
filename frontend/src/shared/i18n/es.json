@@ -177,7 +177,19 @@
       "items": "Platos",
       "orders": "Pedidos",
       "users": "Usuarios",
-      "stats": "Estadísticas"
+      "stats": "Estadísticas",
+      "restaurants": "Restaurantes"
+    },
+    "restaurants": {
+      "editTitle": "Editar — {{name}}",
+      "name": "Nombre del restaurante",
+      "description": "Descripción",
+      "coverImage": "Imagen de portada",
+      "logo": "Logo",
+      "accentColor": "Color de acento",
+      "accentColorHint": "ej: #e63946",
+      "saved": "¡Restaurante actualizado!",
+      "edit": "Editar"
     },
     "stats": {
       "todayOrders": "Pedidos hoy",

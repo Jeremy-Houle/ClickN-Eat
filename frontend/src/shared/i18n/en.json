@@ -177,7 +177,19 @@
       "items": "Dishes",
       "orders": "Orders",
       "users": "Users",
-      "stats": "Statistics"
+      "stats": "Statistics",
+      "restaurants": "Restaurants"
+    },
+    "restaurants": {
+      "editTitle": "Edit — {{name}}",
+      "name": "Restaurant name",
+      "description": "Description",
+      "coverImage": "Cover image",
+      "logo": "Logo",
+      "accentColor": "Accent color",
+      "accentColorHint": "e.g.: #e63946",
+      "saved": "Restaurant updated!",
+      "edit": "Edit"
     },
     "stats": {
       "todayOrders": "Orders today",

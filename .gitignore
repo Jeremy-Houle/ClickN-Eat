@@ -24,5 +24,8 @@ appsettings.Production.json
 # Fichier HTTP template auto-généré (endpoint inexistant)
 *.http
 
+# JetBrains IDE (Rider, WebStorm)
+.idea/
+
 # Misc
 *.log

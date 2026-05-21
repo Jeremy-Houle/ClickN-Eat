@@ -9,5 +9,16 @@ export interface Restaurant {
   logoUrl: string;
 }
 
+export interface UpdateRestaurantDto {
+  name: string;
+  description: string;
+  coverImageUrl?: string;
+  logoUrl?: string;
+  accentColor?: string;
+}
+
 export const getRestaurants = () =>
   api.get<Restaurant[]>('/restaurants').then(r => r.data);
+
+export const updateRestaurant = (id: number, dto: UpdateRestaurantDto) =>
+  api.put<Restaurant>(`/restaurants/${id}`, dto).then(r => r.data);

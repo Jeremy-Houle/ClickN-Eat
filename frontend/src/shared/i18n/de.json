@@ -177,7 +177,19 @@
       "items": "Gerichte",
       "orders": "Bestellungen",
       "users": "Benutzer",
-      "stats": "Statistiken"
+      "stats": "Statistiken",
+      "restaurants": "Restaurants"
+    },
+    "restaurants": {
+      "editTitle": "Bearbeiten — {{name}}",
+      "name": "Restaurantname",
+      "description": "Beschreibung",
+      "coverImage": "Titelbild",
+      "logo": "Logo",
+      "accentColor": "Akzentfarbe",
+      "accentColorHint": "z.B.: #e63946",
+      "saved": "Restaurant aktualisiert!",
+      "edit": "Bearbeiten"
     },
     "stats": {
       "todayOrders": "Bestellungen heute",

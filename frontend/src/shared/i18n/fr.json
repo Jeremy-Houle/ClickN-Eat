@@ -177,7 +177,19 @@
       "items": "Plats",
       "orders": "Commandes",
       "users": "Utilisateurs",
-      "stats": "Statistiques"
+      "stats": "Statistiques",
+      "restaurants": "Restaurants"
+    },
+    "restaurants": {
+      "editTitle": "Modifier — {{name}}",
+      "name": "Nom du restaurant",
+      "description": "Description",
+      "coverImage": "Image de couverture",
+      "logo": "Logo",
+      "accentColor": "Couleur d'accentuation",
+      "accentColorHint": "ex: #e63946",
+      "saved": "Restaurant modifié !",
+      "edit": "Modifier"
     },
     "stats": {
       "todayOrders": "Commandes aujourd'hui",

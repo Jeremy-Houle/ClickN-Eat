@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllMenuItems, getAllCategories, deleteMenuItem, createMenuItem, updateMenuItem } from '@/features/menu/api/menuItems';
 import { getAllOrders, updateOrderStatus } from '@/features/orders/api/orders';
 import { getAdminStats, getAdminUsers, toggleUserStatus, deleteUser, type AdminStats, type AdminUser } from '@/features/admin/api/admin';
-import { getRestaurants } from '@/features/menu/api/restaurants';
+import { getRestaurants, updateRestaurant, type Restaurant, type UpdateRestaurantDto } from '@/features/menu/api/restaurants';
 import ImagePicker from '@/features/admin/components/ImagePicker';
 import { useToast } from '@/shared/context/ToastContext';
 import { useLanguage } from '@/shared/context/LanguageContext';
@@ -21,7 +21,7 @@ const STATUS_COLORS: Record<string, string> = {
 const ALL_STATUSES = Object.keys(STATUS_COLORS);
 const EMPTY_FORM = { name: '', description: '', price: '', category: '', imageUrl: '', isAvailable: true, restaurantId: 1 };
 
-type Tab = 'items' | 'orders' | 'stats' | 'users';
+type Tab = 'items' | 'orders' | 'stats' | 'users' | 'restaurants';
 
 export default function AdminPage() {
   const { toast } = useToast();
@@ -33,13 +33,19 @@ export default function AdminPage() {
   const [ordersPage, setOrdersPage] = useState(1);
   const [usersPage, setUsersPage] = useState(1);
 
-  // — Modal state —
+  // — Menu item modal state —
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formTags, setFormTags] = useState<string[]>([]);
   const [customCategory, setCustomCategory] = useState('');
   const [formError, setFormError] = useState('');
+
+  // — Restaurant modal state —
+  const [restaurantModalOpen, setRestaurantModalOpen] = useState(false);
+  const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
+  const [restaurantForm, setRestaurantForm] = useState<UpdateRestaurantDto>({ name: '', description: '', coverImageUrl: '', logoUrl: '', accentColor: '' });
+  const [restaurantFormError, setRestaurantFormError] = useState('');
 
   // — Queries —
   const { data: restaurants = [] } = useQuery({
@@ -135,6 +141,17 @@ export default function AdminPage() {
     onError: () => toast(t('admin.modal.error'), 'error'),
   });
 
+  const updateRestaurantMutation = useMutation({
+    mutationFn: ({ id, dto }: { id: number; dto: UpdateRestaurantDto }) => updateRestaurant(id, dto),
+    onSuccess: () => {
+      toast(t('admin.restaurants.saved'));
+      qc.invalidateQueries({ queryKey: ['restaurants'] });
+      setRestaurantModalOpen(false);
+      setEditingRestaurant(null);
+    },
+    onError: (err: any) => setRestaurantFormError(err?.response?.data || t('admin.modal.error')),
+  });
+
   // — Helpers —
   const TAGS_OPTIONS = [
     { key: 'vegan', label: t('card.tags.vegan') },
@@ -163,6 +180,20 @@ export default function AdminPage() {
   };
 
   const closeModal = () => { setModalOpen(false); setEditingItem(null); setFormError(''); };
+
+  const openEditRestaurant = (r: Restaurant) => {
+    setEditingRestaurant(r);
+    setRestaurantForm({ name: r.name, description: r.description, coverImageUrl: r.coverImageUrl, logoUrl: r.logoUrl, accentColor: r.accentColor });
+    setRestaurantFormError('');
+    setRestaurantModalOpen(true);
+  };
+  const closeRestaurantModal = () => { setRestaurantModalOpen(false); setEditingRestaurant(null); setRestaurantFormError(''); };
+
+  const handleRestaurantSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRestaurant) return;
+    updateRestaurantMutation.mutate({ id: editingRestaurant.id, dto: restaurantForm });
+  };
   const toggleTag = (key: string) => setFormTags(prev => prev.includes(key) ? prev.filter(tg => tg !== key) : [...prev, key]);
   const effectiveCategory = form.category === '__new__' ? customCategory : form.category;
 
@@ -200,7 +231,7 @@ export default function AdminPage() {
       </div>
 
       <div className="admin-main-tabs">
-        {(['items', 'orders', 'users', 'stats'] as Tab[]).map(tab => (
+        {(['items', 'orders', 'users', 'stats', 'restaurants'] as Tab[]).map(tab => (
           <button key={tab} className={`admin-main-tab${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}>
             {t(`admin.tabs.${tab}`)}
           </button>
@@ -380,6 +411,82 @@ export default function AdminPage() {
             </div>
           )}
         </>
+      )}
+
+      {activeTab === 'restaurants' && (
+        <div className="admin-v2-list">
+          {restaurants.map(r => (
+            <div key={r.id} className="admin-v2-card">
+              <div className="admin-v2-thumb">
+                {r.logoUrl ? <img src={r.logoUrl} alt={r.name} /> : <span>🍽️</span>}
+              </div>
+              <div className="admin-v2-info">
+                <div className="admin-v2-name">{r.name}</div>
+                <div className="admin-v2-desc">{r.description}</div>
+                {r.accentColor && (
+                  <span className="admin-v2-cat" style={{ background: `${r.accentColor}22`, color: r.accentColor, border: `1px solid ${r.accentColor}44` }}>
+                    {r.accentColor}
+                  </span>
+                )}
+              </div>
+              <div className="admin-v2-actions">
+                <button className="btn-icon btn-edit-icon" onClick={() => openEditRestaurant(r)}>✏️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {restaurantModalOpen && editingRestaurant && (
+        <div className="modal-overlay" onClick={closeRestaurantModal}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('admin.restaurants.editTitle', { name: editingRestaurant.name })}</h2>
+              <button className="modal-close" onClick={closeRestaurantModal}>✕</button>
+            </div>
+            <form className="modal-form" onSubmit={handleRestaurantSubmit}>
+              <div className="modal-grid">
+                <div className="modal-col">
+                  <label>{t('admin.restaurants.name')}</label>
+                  <input type="text" required value={restaurantForm.name} onChange={e => setRestaurantForm(f => ({ ...f, name: e.target.value }))} />
+
+                  <label>{t('admin.restaurants.description')}</label>
+                  <textarea required rows={3} value={restaurantForm.description} onChange={e => setRestaurantForm(f => ({ ...f, description: e.target.value }))} />
+
+                  <label>{t('admin.restaurants.accentColor')}</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="color"
+                      value={restaurantForm.accentColor || '#e63946'}
+                      onChange={e => setRestaurantForm(f => ({ ...f, accentColor: e.target.value }))}
+                      style={{ width: '2.5rem', height: '2.5rem', padding: '0.1rem', border: 'none', cursor: 'pointer' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder={t('admin.restaurants.accentColorHint')}
+                      value={restaurantForm.accentColor ?? ''}
+                      onChange={e => setRestaurantForm(f => ({ ...f, accentColor: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div className="modal-col">
+                  <label>{t('admin.restaurants.coverImage')}</label>
+                  <ImagePicker value={restaurantForm.coverImageUrl ?? ''} onChange={url => setRestaurantForm(f => ({ ...f, coverImageUrl: url }))} />
+
+                  <label style={{ marginTop: '1rem' }}>{t('admin.restaurants.logo')}</label>
+                  <ImagePicker value={restaurantForm.logoUrl ?? ''} onChange={url => setRestaurantForm(f => ({ ...f, logoUrl: url }))} />
+                </div>
+              </div>
+              {restaurantFormError && <p className="error">{restaurantFormError}</p>}
+              <div className="modal-footer">
+                <button type="button" className="btn-secondary" onClick={closeRestaurantModal}>{t('admin.modal.cancel')}</button>
+                <button type="submit" className="btn-primary" disabled={updateRestaurantMutation.isPending}>
+                  {updateRestaurantMutation.isPending ? t('admin.modal.saving') : t('admin.modal.save')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {modalOpen && (
